@@ -69,8 +69,8 @@ paths:
       - application/json
       description: Get bills for a specific month
       parameters:
-      - description: Date in the format MM
-        format: mm
+      - description: Date in the format MM-YYYY
+        format: MM-YYYY
         in: path
         name: date
         required: true

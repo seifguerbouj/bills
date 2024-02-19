@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -62,23 +63,51 @@ func AllExpenses(c *gin.Context) {
 // @Tags bills
 // @Accept json
 // @Produce json
-// @Param date path string true "Date in the format MM" Format(mm)
+// @Param date path string true "Date in the format MM-YYYY" Format(MM-YYYY)
 // @Success 200 {object} []models.Bill
 // @Router /bill/{date} [get]
 func GetMonthBills(c *gin.Context) {
-	var newDate string
-	var lastDate string
 	date := c.Param("date")
-	var bills []models.Bill
-	if !strings.Contains(date, "0") && len(date) == 1 {
-		newDate = "01.0" + date + ".2023"
-		lastDate = "31.0" + date + ".2023"
-	} else {
-		newDate = "01." + date + ".2023"
-		lastDate = "31." + date + ".2023"
+	parts := strings.Split(date, "-")
+	if len(parts) != 2 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format. Use MM-YYYY format."})
+		return
 	}
-	models.DB.Where("date BETWEEN ? AND ?", newDate, lastDate).Find(&bills)
-	c.JSON(http.StatusOK, gin.H{"data": bills})
+
+	month, err := strconv.Atoi(parts[0])
+	if err != nil || month < 1 || month > 12 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid month."})
+		return
+	}
+
+	year, err := strconv.Atoi(parts[1])
+	if err != nil || year < 1000 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid year."})
+		return
+	}
+
+	var bills []models.Bill
+	models.DB.Find(&bills)
+
+	var filteredBills []models.Bill
+	for _, bill := range bills {
+		billParts := strings.Split(bill.Date, ".")
+		billMonth, err := strconv.Atoi(billParts[1])
+		if err != nil {
+			// Handle parsing error if needed
+			continue
+		}
+		billYear, err := strconv.Atoi(billParts[2])
+		if err != nil {
+			// Handle parsing error if needed
+			continue
+		}
+		if billMonth == month && billYear == year {
+			filteredBills = append(filteredBills, bill)
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": filteredBills})
 }
 
 // @Summary Update a bill

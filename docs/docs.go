@@ -74,8 +74,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "format": "mm",
-                        "description": "Date in the format MM",
+                        "format": "MM-YYYY",
+                        "description": "Date in the format MM-YYYY",
                         "name": "date",
                         "in": "path",
                         "required": true
