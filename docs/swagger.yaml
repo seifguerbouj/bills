@@ -1,0 +1,167 @@
+basePath: /
+definitions:
+  models.Bill:
+    properties:
+      amount:
+        type: integer
+      author:
+        type: string
+      date:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.CreateBillInput:
+    properties:
+      amount:
+        type: integer
+      author:
+        type: string
+      date:
+        type: string
+      title:
+        type: string
+    required:
+    - author
+    - title
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: seifguerbouj@gmail.com
+    name: API Support
+    url: https://www.example.com/support
+  description: This is a sample Bills API.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://example.com/terms/
+  title: Bills API
+  version: "1.0"
+paths:
+  /bill:
+    post:
+      consumes:
+      - application/json
+      description: Create a new bill
+      parameters:
+      - description: Bill input object
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateBillInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Bill'
+      summary: Create a bill
+      tags:
+      - bills
+  /bill/{date}:
+    get:
+      consumes:
+      - application/json
+      description: Get bills for a specific month
+      parameters:
+      - description: Date in the format MM
+        format: mm
+        in: path
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Bill'
+            type: array
+      summary: Get bills for a specific month
+      tags:
+      - bills
+  /bill/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a bill with the specified ID
+      parameters:
+      - description: Bill ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete a bill
+      tags:
+      - bills
+    put:
+      consumes:
+      - application/json
+      description: Update a bill with the specified ID
+      parameters:
+      - description: Bill ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated bill object
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateBillInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Bill'
+      summary: Update a bill
+      tags:
+      - bills
+  /bills:
+    get:
+      consumes:
+      - application/json
+      description: Get all bills
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Bill'
+            type: array
+      summary: Find all bills
+      tags:
+      - bills
+  /expenses:
+    get:
+      consumes:
+      - application/json
+      description: Get total expenses
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: Calculate all expenses
+      tags:
+      - expenses
+swagger: "2.0"
